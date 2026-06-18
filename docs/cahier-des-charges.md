@@ -1,0 +1,81 @@
+# Cahier des Charges — Productive Daily Planner
+
+## Vision produit
+
+Transformer le fichier Excel "PRODUCTIVE DAILY PLANNER 2025" en une application web moderne, interactive et fluide. L'objectif est de conserver toute la logique métier du planificateur tout en offrant une expérience utilisateur supérieure : interface dark, navigation rapide, persistance automatique.
+
+## Utilisateurs cibles
+
+Toute personne utilisant le Productive Daily Planner Excel de Christian Saboukoulou / CSMedias :
+- Entrepreneurs et freelances gérant plusieurs projets
+- Managers planifiant leurs semaines et équipes
+- Étudiants et professionnels en quête de productivité structurée
+
+## Fonctionnalités
+
+### F1 — Configuration initiale
+- F1.1 : Saisie du nom utilisateur
+- F1.2 : Définition de la date de démarrage du planificateur (dernier lundi de l'année précédente)
+- F1.3 : Définition de jusqu'à 25 types de projets avec nom et couleur
+- F1.4 : Définition des tâches récurrentes par jour de la semaine (5 max par jour)
+
+### F2 — Planificateur quotidien
+- F2.1 : Visualisation du planning du jour avec toutes ses tâches
+- F2.2 : Ajout, édition, suppression de tâches (max 25/jour)
+- F2.3 : Chaque tâche : désignation, domaine, priorité (P1-P4), temps estimé (min), temps réel (min), statut, remarques
+- F2.4 : Statuts : "À faire" / "En cours" / "Fait"
+- F2.5 : Calcul automatique du temps total estimé et du temps restant
+- F2.6 : Barre de progression du jour (% tâches complétées)
+- F2.7 : Injection automatique des tâches récurrentes lors de la création d'un nouveau jour
+- F2.8 : Navigation ← → entre les jours
+
+### F3 — Planificateur hebdomadaire
+- F3.1 : Vue semaine sur 7 colonnes (Lundi à Dimanche)
+- F3.2 : Liste des tâches principales de la semaine (max 22) avec désignation, domaine, priorité
+- F3.3 : Résumé compact de chaque journée dans la vue semaine
+- F3.4 : Métriques par journée : temps estimé total, nombre de tâches
+- F3.5 : Navigation entre les semaines
+
+### F4 — Vue mensuelle (calendrier)
+- F4.1 : Grille calendrier du mois sélectionné
+- F4.2 : Indicateurs par jour : nombre de tâches, progression
+- F4.3 : Sélecteur mois/année
+- F4.4 : Clic sur un jour pour accéder au planificateur quotidien
+- F4.5 : Clic sur une semaine pour accéder au planificateur hebdomadaire
+
+### F5 — Project Board
+- F5.1 : Tableau de tous les projets (max 100)
+- F5.2 : Colonnes : #, désignation, type, priorité, niveau d'impact, date début, deadline, état, avancement (%), personnes clés, commentaires
+- F5.3 : Ajout, édition inline, suppression de projets
+- F5.4 : Filtres par type, statut, priorité
+- F5.5 : Tri par colonne
+- F5.6 : Barre de progression visuelle par projet
+
+## Règles métier
+
+- Une semaine commence le lundi (ISO 8601)
+- weekId format : `YYYY-WNN` (ex: `2025-W01`)
+- Maximum 25 tâches par jour
+- Maximum 22 tâches principales par semaine
+- Maximum 5 tâches récurrentes par jour de la semaine
+- Maximum 25 types de projets
+- Maximum 100 projets dans le board
+- Les tâches récurrentes sont automatiquement ajoutées au plan du jour lors de sa première ouverture
+- Le temps restant = somme des temps estimés des tâches "À faire" et "En cours"
+- Un projet a un avancement de 0 à 100%
+- Statuts projet : En attente / En cours / Terminé / Annulé / En pause
+- Niveaux d'impact projet : Fort / Moyen / Faible
+
+## Contraintes techniques
+
+- Persistance 100% locale via localStorage (pas de backend, pas d'authentification)
+- Application fonctionnelle hors-ligne
+- Responsive : adapté mobile (sidebar collapse) et desktop
+- Dark mode natif (pas de toggle)
+- Zéro dépendance backend
+- Build statique exportable
+- TypeScript strict (pas de `any`)
+
+## Architecture
+
+Voir `docs/architecture-ddd.md`
