@@ -21,7 +21,7 @@ export default function ProjectsPage() {
   }, [])
 
   return (
-    <div className="p-6 max-w-6xl mx-auto space-y-6">
+    <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-4 md:space-y-6">
       <div className="flex items-center gap-3">
         <FolderKanban size={22} className="text-primary" />
         <div>

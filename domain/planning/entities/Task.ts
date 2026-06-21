@@ -12,4 +12,5 @@ export interface Task {
   remarks: string
   position: number
   isRecurring: boolean
+  startTime?: string | null
 }

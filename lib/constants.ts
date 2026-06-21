@@ -22,28 +22,28 @@ export const PROJECT_TYPE_COLORS = [
 ]
 
 export const STATUS_COLORS: Record<string, string> = {
-  'À faire': '#374151',
-  'En cours': '#1d4ed8',
-  'Fait': '#065f46',
+  'À faire': '#887364',
+  'En cours': '#8d4b00',
+  'Fait': '#2d6a4f',
 }
 
 export const PRIORITY_COLORS: Record<string, string> = {
-  'P1 - Critique': '#ef4444',
-  'P2 - Haute': '#f97316',
-  'P3 - Normale': '#6366f1',
-  'P4 - Basse': '#6b7280',
+  'P1 - Critique': '#ba1a1a',
+  'P2 - Haute': '#d97706',
+  'P3 - Normale': '#6448b3',
+  'P4 - Basse': '#887364',
 }
 
 export const IMPACT_COLORS: Record<string, string> = {
-  'Fort': '#7c3aed',
-  'Moyen': '#6366f1',
-  'Faible': '#4b5563',
+  'Fort': '#6448b3',
+  'Moyen': '#8d4b00',
+  'Faible': '#887364',
 }
 
 export const PROJECT_STATUS_COLORS: Record<string, string> = {
-  'En attente': '#6b7280',
-  'En cours': '#1d4ed8',
-  'Terminé': '#065f46',
-  'Annulé': '#7f1d1d',
-  'En pause': '#92400e',
+  'En attente': '#887364',
+  'En cours': '#8d4b00',
+  'Terminé': '#2d6a4f',
+  'Annulé': '#ba1a1a',
+  'En pause': '#d97706',
 }

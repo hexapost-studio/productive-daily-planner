@@ -66,11 +66,78 @@ Toute personne utilisant le Productive Daily Planner Excel de Christian Saboukou
 - Statuts projet : En attente / En cours / Terminé / Annulé / En pause
 - Niveaux d'impact projet : Fort / Moyen / Faible
 
+## Ergonomie Mobile-First
+
+L'application est conçue **mobile d'abord**. Chaque écran est pensé pour un usage tactile sur iPhone/Android avant d'être adapté desktop.
+
+### Principes fondamentaux
+
+- **Touch targets ≥ 44×44px** sur tous les éléments interactifs (boutons, liens, icônes)
+- **Font size ≥ 16px** sur tous les inputs/select pour éviter le zoom automatique iOS
+- **Safe area iOS** : `env(safe-area-inset-bottom)` appliqué sur la bottom nav et le contenu principal
+- **Navigation bottom** sur mobile, sidebar fixe sur desktop (`md:flex`)
+- **Pas de hover-only** : toutes les actions doivent être accessibles au tap
+
+### Navigation
+
+- **Mobile** : Bottom nav fixe 4 tabs (Accueil / Planner / Projets / Params), hauteur 64px + safe area
+- **Desktop** : Sidebar fixe 240px à gauche, toujours visible
+- **TopBar mobile** : hamburger à gauche, titre centré, zone droite symétrique pour équilibre visuel
+- **Sidebar overlay** : s'ouvre sur swipe/tap hamburger, fond semi-transparent cliquable pour fermer
+
+### Navigation temporelle
+
+- **Swipe gauche/droite** sur la vue journée pour changer de jour (touch gesture natif)
+- **Chips scrollables horizontalement** sur la vue semaine (scroll-x avec snap)
+- **Calendrier mensuel** : cases avec indicateurs de tâches (dots colorés par priorité, badge count)
+- **Navigation ← →** visible et avec touch target ≥ 44px
+
+### Formulaires & saisie
+
+- Selects natifs shadcn/ui adaptés touch
+- Champs estimé/réel côte à côte (50%/50%) sur mobile — pas l'un sous l'autre
+- Textarea remarques avec `rows=2` minimum pour éviter le scroll interne
+- Validation inline, pas de modale de confirmation pour les actions courantes
+
+### Listes & cartes
+
+- **TaskCard** : désignation sur 1 ligne avec expansion au tap, pas de troncature silencieuse
+- **Priorité** affichée via bordure gauche colorée (4px) — lecture rapide sans texte
+- **Statut** : badge color-coded, tap direct pour changer (pas besoin d'ouvrir un select)
+- **Actions secondaires** (focus, supprimer) : icônes visibles mais compactes, ≥ 44px touch
+- **FAB "+ Ajouter"** : bouton fixe en bas à droite sur mobile pour ajout rapide
+
+### Vues spécifiques mobile
+
+| Vue | Adaptation mobile |
+|-----|-------------------|
+| Calendrier mensuel | Grille 7 colonnes lettres initiales, dots tâches par case, semaines masquées |
+| Vue semaine | Chips jours scrollables horizontal avec snap, accordéon tâches hebdo |
+| Vue journée | Header sticky, swipe j-1/j+1, FAB ajouter |
+| Project Board | Filtres dans sheet bottom au lieu de 3 dropdowns côte à côte |
+| Settings | Tabs scrollables, formulaires pleine largeur |
+| Focus mode | Plein écran, timer SVG centré, un seul bouton CTA |
+
+### Gestes supportés
+
+- Swipe horizontal : navigation jour précédent/suivant (vue journée)
+- Tap long : réordonner une tâche (drag & drop)
+- Pull-to-refresh : rechargement des données (futur)
+
+### Performance mobile
+
+- Pas d'animation > 300ms sur les transitions de page
+- `will-change: transform` uniquement sur les éléments animés
+- Images SVG inline (pas de fetch réseau)
+- localStorage synchrone — pas de loader visible pour les lectures
+
+---
+
 ## Contraintes techniques
 
 - Persistance 100% locale via localStorage (pas de backend, pas d'authentification)
 - Application fonctionnelle hors-ligne
-- Responsive : adapté mobile (sidebar collapse) et desktop
+- **Mobile-first** : conçu pour 390px (iPhone 14), adapté desktop ≥ 768px
 - Dark mode natif (pas de toggle)
 - Zéro dépendance backend
 - Build statique exportable
