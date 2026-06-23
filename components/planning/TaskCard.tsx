@@ -4,7 +4,16 @@ import { Task } from '@/domain/planning/entities/Task'
 import { TASK_STATUSES, TaskStatus } from '@/domain/planning/value-objects/TaskStatus'
 import { PRIORITIES } from '@/domain/planning/value-objects/Priority'
 import { STATUS_COLORS, PRIORITY_COLORS } from '@/lib/constants'
-import { Trash2, RepeatIcon, Zap } from 'lucide-react'
+import { Trash2, RepeatIcon, Zap, MapPin, Bell, BellOff } from 'lucide-react'
+import type { EnergyLevel } from '@/domain/planning/entities/Task'
+
+const ENERGY_CONFIG: Record<EnergyLevel, { label: string; icon: string; color: string }> = {
+  haute:    { label: 'Énergie haute',    icon: '⚡⚡', color: '#d97706' },
+  moyenne:  { label: 'Énergie moyenne',  icon: '⚡',  color: '#6448b3' },
+  faible:   { label: 'Énergie faible',   icon: '💤',  color: '#6b5040' },
+}
+
+const DEFAULT_CONTEXTS = ['@bureau', '@domicile', '@téléphone', '@extérieur', '@déplacement']
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import Link from 'next/link'
@@ -34,13 +43,20 @@ export function TaskCard({ task, onChange, onDelete, compact, date }: TaskCardPr
 
   const priorityColor = task.priority ? PRIORITY_COLORS[task.priority] : 'transparent'
   const cardId = `task-${task.id}`
+  const isBlocked = (task.blockedBy?.length ?? 0) > 0
 
   return (
     <article
-      className="rounded-lg border border-border p-3 space-y-2.5 overflow-hidden relative"
+      className={cn('rounded-lg border p-3 space-y-2.5 overflow-hidden relative', isBlocked ? 'border-[#d97706]/40 opacity-70' : 'border-border')}
       style={{ background: 'var(--card)' }}
       aria-labelledby={`${cardId}-title`}
+      aria-disabled={isBlocked}
     >
+      {isBlocked && (
+        <div className="absolute top-2 right-2 text-[10px] font-medium text-[#d97706] bg-[#d97706]/10 px-2 py-0.5 rounded-full" aria-label={`Tâche bloquée par ${task.blockedBy?.length} autre${(task.blockedBy?.length ?? 0) > 1 ? 's' : ''}`}>
+          🔒 Bloquée
+        </div>
+      )}
       {/* Barre priorité gauche — décorative */}
       <div
         className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-lg transition-colors duration-200"
@@ -68,13 +84,35 @@ export function TaskCard({ task, onChange, onDelete, compact, date }: TaskCardPr
         <div className="flex items-center gap-1 flex-shrink-0">
           {date && task.status !== 'Fait' && (
             <Link href={`/focus/${date}/${task.id}`}>
-              <button
-                className="p-2 rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
-                aria-label={`Mode focus — ${task.designation || `tâche ${taskNum}`}`}
-              >
+              <button className="p-2 rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label={`Mode focus — ${task.designation || `tâche ${taskNum}`}`}>
                 <Zap size={15} aria-hidden="true" />
               </button>
             </Link>
+          )}
+          {/* Rappel */}
+          {date && (
+            <div className="relative">
+              {task.reminder ? (
+                <button
+                  onClick={() => update({ reminder: null })}
+                  aria-label={`Supprimer le rappel — ${task.reminder.time}`}
+                  className="p-2 rounded text-primary hover:text-destructive hover:bg-destructive/10 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                >
+                  <Bell size={14} aria-hidden="true" />
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    const time = prompt('Heure du rappel (HH:MM) :', '09:00')
+                    if (time && /^\d{2}:\d{2}$/.test(time)) update({ reminder: { date, time } })
+                  }}
+                  aria-label={`Ajouter un rappel — tâche ${taskNum}`}
+                  className="p-2 rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                >
+                  <BellOff size={14} aria-hidden="true" />
+                </button>
+              )}
+            </div>
           )}
           <button
             onClick={onDelete}
@@ -170,8 +208,39 @@ export function TaskCard({ task, onChange, onDelete, compact, date }: TaskCardPr
         )}
       </div>
 
-      {/* Row 4 : remarques */}
-      <div className="ml-9">
+      {/* Row 4 : énergie + contexte + remarques */}
+      <div className="ml-9 space-y-2">
+        <div className="flex flex-wrap gap-2 items-center">
+          {/* Énergie */}
+          <div className="flex items-center gap-1" role="group" aria-label={`Énergie requise — tâche ${taskNum}`}>
+            {(Object.entries(ENERGY_CONFIG) as [EnergyLevel, typeof ENERGY_CONFIG[EnergyLevel]][]).map(([level, cfg]) => (
+              <button
+                key={level}
+                type="button"
+                aria-label={cfg.label}
+                aria-pressed={task.energyLevel === level}
+                onClick={() => update({ energyLevel: task.energyLevel === level ? null : level })}
+                className={cn('px-2 py-1 rounded-lg text-xs font-medium border transition-colors', task.energyLevel === level ? 'border-current' : 'border-border text-muted-foreground hover:border-current')}
+                style={{ color: task.energyLevel === level ? cfg.color : undefined }}
+              >
+                {cfg.icon}
+              </button>
+            ))}
+          </div>
+          {/* Contexte */}
+          <div className="flex items-center gap-1 min-w-0">
+            <MapPin size={12} className="text-muted-foreground flex-shrink-0" aria-hidden="true" />
+            <select
+              value={task.context ?? ''}
+              onChange={(e) => update({ context: e.target.value || null })}
+              aria-label={`Contexte — tâche ${taskNum}`}
+              className="h-8 text-xs bg-muted border border-border rounded-lg px-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+            >
+              <option value="">Contexte</option>
+              {DEFAULT_CONTEXTS.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+        </div>
         <label htmlFor={`${cardId}-remarks`} className="sr-only">Remarques — tâche {taskNum}</label>
         <Input
           id={`${cardId}-remarks`}

@@ -10,5 +10,6 @@ export async function GET(request: Request) {
     await supabase.auth.exchangeCodeForSession(code)
   }
 
-  return NextResponse.redirect(`${origin}/`)
+  // Redirect avec paramètre pour déclencher la migration côté client
+  return NextResponse.redirect(`${origin}/?sync=1`)
 }

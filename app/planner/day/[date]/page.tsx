@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, use } from 'react'
+import React, { useEffect, useState, use } from 'react'
 import Link from 'next/link'
 import { getDailyPlan, saveDailyPlan } from '@/application/planning/GetDailyPlan'
 import { DailyPlan } from '@/domain/planning/entities/DailyPlan'
@@ -15,7 +15,8 @@ import { CalendarEvents } from '@/components/planning/CalendarEvents'
 import { MorningRitual } from '@/components/planning/MorningRitual'
 import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
-import { ChevronLeft, ChevronRight, Plus, CalendarDays, Sparkles, ListTodo, List, BarChart2 } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, CalendarDays, Sparkles, ListTodo, List, BarChart2, BookOpen, Smile, Meh, Frown, Star } from 'lucide-react'
+import type { JournalMood } from '@/domain/planning/entities/DailyPlan'
 import { cn } from '@/lib/utils'
 import { PRIORITIES } from '@/domain/planning/value-objects/Priority'
 import { useRouter } from 'next/navigation'
@@ -277,6 +278,38 @@ export default function DayPage({ params }: DayPageProps) {
           </div>
         </div>
       </div>
+
+      {/* Journal fin de journée */}
+      <section className="rounded-2xl border border-border p-4 md:p-5 space-y-3" style={{ background: 'var(--card)' }} aria-labelledby="journal-title">
+        <div className="flex items-center gap-2">
+          <BookOpen size={16} className="text-primary flex-shrink-0" />
+          <h2 id="journal-title" className="font-semibold text-sm text-foreground">Réflexion du jour</h2>
+          {/* Mood picker */}
+          <div className="ml-auto flex items-center gap-1" role="group" aria-label="Humeur du jour">
+            {([['great', Star, '#d97706'], ['good', Smile, '#2d6a4f'], ['okay', Meh, '#6448b3'], ['hard', Frown, '#ba1a1a']] as [JournalMood, React.ElementType, string][]).map(([mood, Icon, color]) => (
+              <button
+                key={mood}
+                aria-label={`Humeur : ${mood}`}
+                aria-pressed={plan?.mood === mood}
+                onClick={() => plan && save({ ...plan, mood: plan.mood === mood ? undefined : mood })}
+                className="p-1.5 rounded-lg transition-all"
+                style={{ background: plan?.mood === mood ? color + '20' : 'transparent', color: plan?.mood === mood ? color : 'var(--muted-foreground)' }}
+              >
+                <Icon size={18} />
+              </button>
+            ))}
+          </div>
+        </div>
+        <textarea
+          id={`journal-${date}`}
+          aria-label="Notes de fin de journée"
+          value={plan?.journal ?? ''}
+          onChange={(e) => plan && save({ ...plan, journal: e.target.value })}
+          placeholder="Qu'as-tu accompli aujourd'hui ? Qu'as-tu appris ? Qu'est-ce qui t'a bloqué ?"
+          rows={3}
+          className="w-full resize-none rounded-xl border border-border bg-muted px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all"
+        />
+      </section>
 
       {showRitual && isToday && (
         <MorningRitual

@@ -22,6 +22,12 @@ export function getWeeklyPlan(weekId: string): WeeklyPlan {
 export function saveWeeklyPlan(plan: WeeklyPlan): void {
   const repo = buildRepo()
   repo.saveWeeklyPlan(plan)
+  // Dual-write cloud si Supabase configuré et user connecté
+  if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    import('@/lib/sync').then(({ syncWeeklyPlanToCloud }) => {
+      syncWeeklyPlanToCloud(plan).catch(() => { /* silently fail */ })
+    })
+  }
 }
 
 export function getAllWeeklyPlans(): WeeklyPlan[] {

@@ -10,7 +10,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Plus, Trash2, Pencil, Briefcase, SlidersHorizontal, X, LayoutGrid, List } from 'lucide-react'
+import { Plus, Trash2, Pencil, Briefcase, SlidersHorizontal, X, LayoutGrid, List, AlertTriangle } from 'lucide-react'
+import { differenceInDays, parseISO } from 'date-fns'
+import { getTodayISO } from '@/lib/date-utils'
 import { cn } from '@/lib/utils'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { PROJECT_STATUSES } from '@/domain/projects/value-objects/ProjectStatus'
@@ -437,10 +439,19 @@ export function ProjectBoard({ projects, projectTypes, onRefresh }: ProjectBoard
               <span className="text-xs font-semibold text-muted-foreground w-10 text-right">{project.progress}%</span>
             </div>
 
-            {/* Meta */}
-            <div className="flex gap-3 mt-2 text-xs text-muted-foreground ml-7 flex-wrap">
+            {/* Meta + deadline countdown */}
+            <div className="flex gap-3 mt-2 text-xs text-muted-foreground ml-7 flex-wrap items-center">
               {project.startDate && <span>Début: {project.startDate}</span>}
-              {project.deadline && <span>Deadline: {project.deadline}</span>}
+              {project.deadline && (() => {
+                const days = differenceInDays(parseISO(project.deadline), parseISO(getTodayISO()))
+                const urgent = days <= 7 && project.status !== 'Terminé' && project.status !== 'Annulé'
+                return (
+                  <span className={`flex items-center gap-1 font-medium ${urgent ? (days < 0 ? 'text-[#ba1a1a]' : days <= 3 ? 'text-[#d97706]' : 'text-foreground') : ''}`}>
+                    {urgent && <AlertTriangle size={11} />}
+                    {days < 0 ? `Dépassée de ${Math.abs(days)}j` : days === 0 ? "Deadline aujourd'hui" : `Deadline: J-${days}`}
+                  </span>
+                )
+              })()}
               {project.keyPeople && <span className="hidden sm:inline">Équipe: {project.keyPeople}</span>}
             </div>
             {project.comments && (

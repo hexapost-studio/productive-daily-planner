@@ -9,6 +9,8 @@ import { getTodayISO, getWeekId } from '@/lib/date-utils'
 import { parseISO } from 'date-fns'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { useNotifications } from '@/hooks/useNotifications'
+import { Suspense } from 'react'
+import { SyncTrigger } from './SyncTrigger'
 
 interface AppShellProps {
   children: React.ReactNode
@@ -48,6 +50,7 @@ export function AppShell({ children }: AppShellProps) {
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <a href="#main-content" className="skip-link">Aller au contenu principal</a>
+      <Suspense><SyncTrigger /></Suspense>
       {/* Sidebar — desktop only */}
       <Sidebar
         open={sidebarOpen}

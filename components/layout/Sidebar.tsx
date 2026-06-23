@@ -11,6 +11,8 @@ import {
   X,
   Cloud,
   BarChart2,
+  Inbox,
+  Target,
 } from 'lucide-react'
 import { GlobalSearch } from '@/components/search/GlobalSearch'
 import { cn } from '@/lib/utils'
@@ -24,8 +26,10 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { href: '/', icon: <LayoutDashboard size={20} />, label: 'Dashboard', exact: true },
+  { href: '/inbox', icon: <Inbox size={20} />, label: 'Inbox' },
   { href: '/planner', icon: <CalendarDays size={20} />, label: 'Planificateur' },
   { href: '/projects', icon: <FolderKanban size={20} />, label: 'Projets' },
+  { href: '/goals', icon: <Target size={20} />, label: 'Objectifs' },
   { href: '/stats', icon: <BarChart2 size={20} />, label: 'Statistiques' },
   { href: '/settings', icon: <Settings size={20} />, label: 'Paramètres' },
 ]

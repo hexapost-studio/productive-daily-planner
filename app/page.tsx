@@ -12,8 +12,9 @@ import { getTodayISO, formatDateFR, getTodayWeekId } from '@/lib/date-utils'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { ArrowRight, CheckCircle, Clock, Target, BookOpen } from 'lucide-react'
+import { ArrowRight, CheckCircle, Clock, Target, BookOpen, AlertTriangle } from 'lucide-react'
 import { STATUS_COLORS, PROJECT_STATUS_COLORS, LS_PREFIX } from '@/lib/constants'
+import { differenceInDays, parseISO } from 'date-fns'
 
 interface WeekLogbook { doneTasks: number; totalTasks: number; totalRealMin: number }
 
@@ -47,6 +48,12 @@ export default function DashboardPage() {
     setActiveProjects(projs)
     setLogbook(getWeekLogbook())
   }, [today])
+
+  const urgentProjects = activeProjects.filter((p) => {
+    if (!p.deadline || p.status === 'Terminé' || p.status === 'Annulé') return false
+    const days = differenceInDays(parseISO(p.deadline), parseISO(today))
+    return days <= 7
+  }).map((p) => ({ ...p, daysLeft: differenceInDays(parseISO(p.deadline!), parseISO(today)) }))
 
   const tasks = dailyPlan?.tasks ?? []
   const doneTasks = tasks.filter((t) => t.status === 'Fait').length
@@ -173,6 +180,30 @@ export default function DashboardPage() {
               <Progress value={Math.round((logbook.doneTasks / logbook.totalTasks) * 100)} className="h-1.5" aria-label="Taux de complétion de la semaine" />
             </div>
           )}
+        </div>
+      )}
+
+      {/* Deadlines urgentes ≤ 7 jours */}
+      {urgentProjects.length > 0 && (
+        <div className="rounded-2xl border border-[#ba1a1a]/30 bg-[#ba1a1a]/5 p-4" role="alert" aria-label="Deadlines urgentes">
+          <div className="flex items-center gap-2 mb-3">
+            <AlertTriangle size={16} className="text-[#ba1a1a] flex-shrink-0" />
+            <h2 className="font-semibold text-sm text-foreground">Deadlines proches</h2>
+          </div>
+          <div className="space-y-2">
+            {urgentProjects.map((p) => (
+              <div key={p.id} className="flex items-center justify-between gap-2">
+                <p className="text-sm text-foreground truncate flex-1">{p.designation}</p>
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0 ${
+                  p.daysLeft < 0 ? 'bg-[#ba1a1a] text-white' :
+                  p.daysLeft === 0 ? 'bg-[#d97706] text-white' :
+                  'bg-[#ba1a1a]/15 text-[#ba1a1a]'
+                }`}>
+                  {p.daysLeft < 0 ? `J+${Math.abs(p.daysLeft)}` : p.daysLeft === 0 ? "Aujourd'hui" : `J-${p.daysLeft}`}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

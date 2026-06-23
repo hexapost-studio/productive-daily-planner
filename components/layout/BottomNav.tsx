@@ -2,15 +2,15 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, CalendarDays, Briefcase, Settings, BarChart2 } from 'lucide-react'
+import { LayoutDashboard, CalendarDays, Briefcase, Inbox, Target } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const NAV_ITEMS = [
   { href: '/', icon: LayoutDashboard, label: 'Accueil', exact: true },
+  { href: '/inbox', icon: Inbox, label: 'Inbox' },
   { href: '/planner', icon: CalendarDays, label: 'Planner' },
   { href: '/projects', icon: Briefcase, label: 'Projets' },
-  { href: '/stats', icon: BarChart2, label: 'Stats' },
-  { href: '/settings', icon: Settings, label: 'Réglages' },
+  { href: '/goals', icon: Target, label: 'Objectifs' },
 ]
 
 export function BottomNav() {
@@ -29,32 +29,12 @@ export function BottomNav() {
             href={href}
             aria-current={isActive ? 'page' : undefined}
             aria-label={label}
-            className="flex-1 flex flex-col items-center justify-center gap-1 transition-all min-h-[44px] relative"
+            className="flex-1 flex flex-col items-center justify-center gap-1 transition-all min-h-[44px]"
           >
-            {/* Pill indicator */}
-            <span
-              className={cn(
-                'flex items-center justify-center w-12 h-7 rounded-full transition-all duration-200',
-                isActive
-                  ? 'bg-primary/12'
-                  : 'bg-transparent',
-              )}
-            >
-              <Icon
-                size={20}
-                strokeWidth={isActive ? 2.5 : 1.8}
-                className={cn(
-                  'transition-colors duration-200',
-                  isActive ? 'text-primary' : 'text-muted-foreground',
-                )}
-              />
+            <span className={cn('flex items-center justify-center w-12 h-7 rounded-full transition-all duration-200', isActive ? 'bg-primary/12' : 'bg-transparent')}>
+              <Icon size={20} strokeWidth={isActive ? 2.5 : 1.8} className={cn('transition-colors duration-200', isActive ? 'text-primary' : 'text-muted-foreground')} />
             </span>
-            <span
-              className={cn(
-                'text-[10px] font-semibold leading-none transition-colors duration-200',
-                isActive ? 'text-primary' : 'text-muted-foreground',
-              )}
-            >
+            <span className={cn('text-[10px] font-semibold leading-none transition-colors duration-200', isActive ? 'text-primary' : 'text-muted-foreground')}>
               {label}
             </span>
           </Link>

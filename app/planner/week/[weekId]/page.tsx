@@ -100,7 +100,11 @@ export default function WeekPage({ params }: WeekPageProps) {
           variant="outline"
           size="sm"
           className="border-border h-10 text-xs gap-1 no-print"
-          onClick={() => window.print()}
+          onClick={async () => {
+            if (!plan) return
+            const { exportWeeklyPDF } = await import('@/lib/exportPdf')
+            await exportWeeklyPDF(plan)
+          }}
         >
           <Printer size={13} />
           <span className="hidden md:inline">Exporter PDF</span>
