@@ -41,3 +41,16 @@ App de productivité quotidienne inspirée du fichier Excel "PRODUCTIVE DAILY PL
 - Palette indigo/violet (#6366f1 / #8b5cf6)
 - Statuts : "À faire" / "En cours" / "Fait"
 - Priorités : P1 Critique / P2 Haute / P3 Normale / P4 Basse
+
+---
+
+## Workflow de session
+
+### Début
+1. Lire `~/.claude/KNOWLEDGE_BASE.md` — patterns transférables (stack Next.js/localStorage pertinent ici)
+2. Vérifier `npm run dev` tourne avant tout changement UI
+
+### Fin (3 questions)
+1. **Pattern transférable ?** → OUI : ajouter dans `~/.claude/KNOWLEDGE_BASE.md`
+2. **Mémoire projet à jour ?** → mettre à jour `~/.claude/projects/.../memory/project-productive-daily-planner.md`
+3. **Dette introduite ?** → `npx tsc --noEmit` vert avant de fermer
